@@ -1,0 +1,74 @@
+<style>
+        body{
+            margin: 0;
+            padding: 0;
+        }
+        iframe{
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        img{
+            width: 700;
+        }
+    
+    </style>
+    
+    <body>
+        <iframe id="iframe" src="" frameborder="0"></iframe>
+        <script>
+    const customer_informationF = (url,id,type)=>{
+            let typeS,data,newWindow = window.open('loading.html');
+            $(loading_div).show();
+            if(type == "png")
+            typeS = "image/"
+            else
+            typeS = "application/"
+            var xhr = new XMLHttpRequest();    
+            let id ="123456789"
+            xhr.open("get", url+id+'.'+type, true);
+            xhr.responseType = "blob";
+            xhr.onload = function() {
+                if (this.status == 200) {
+                    var blob=new Blob([this.response],{type:typeS+type}); 
+                    const url = window.URL || window.webkitURL || window.moxURL
+                    const downloadHref = url.createObjectURL(blob)
+                    let downloadLink = document.createElement('a')
+                    downloadLink.href = downloadHref
+                    downloadLink.download = id+'.'+type;
+                    // 触发点击事件执行下载
+                    $(loading_div).hide();
+                    reader.onload = function (e) {
+                        data = e.currentTarget.result.replace(/[\r\n]/g,"");
+                        window.localStorage.setItem("iframe",data);
+                        setTimeout(()=>{
+                            var iframe = document.getElementById("iframe")
+                            let images = window.localStorage.getItem("iframe")
+                            if(images.indexOf('images"')>0)
+                            {
+                                iframe.style.display = "none"
+                                let imagesArr = JSON.parse(images)
+                                imagesArr.images.forEach((v,i)=>{
+                                    let img = new Image;
+                                    img.src = v;
+                                    document.body.append(img)
+                                    document.body.append(document.createElement("br"))
+                                });
+                            }else{
+                                iframe.src = window.localStorage.getItem("iframe")
+                                iframe.style.display = "block"
+                            }
+                        },10);
+                    }
+                    reader.readAsDataURL(blob);
+                }
+            };
+            xhr.send();
+    
+    }
+    window.onload = fn =>{
+        let url = window.location.search.replace("?","");
+        customer_informationF(url,"pdf")
+    }
+        </script>
+    </body>

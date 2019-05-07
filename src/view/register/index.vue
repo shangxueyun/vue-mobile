@@ -1,5 +1,5 @@
 <template>
-    <div style="height: 100%;background-color:#F0EFF5;">
+    <div style="height: 100%;overflow: hidden;background-color:#F0EFF5;">
         <x-header @on-click-back="backReturn" style="background-color:#06123C;padding: .6rem 0;" :left-options="{backText: '',preventGoBack:true}">注册</x-header>
         <div style="padding: 1.5rem 0;">
             <x-input title="请输入手机号" style="background-color:#fff;" :show-clear="false" v-model="phone" @on-change="phoneFvalue" placeholder="请输入手机号">
@@ -35,6 +35,7 @@ export default {
     },
     mounted() {
         //console.log(this.$router)
+        document.body.scrollTop = 0
     },  
     methods: {
         phoneFvalue(value) {

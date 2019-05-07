@@ -1,14 +1,18 @@
 <template>
     <div style="height: 100%;">
-        <div style="position: fixed;top: 0;left: 0;width: 100%;height: 4rem;z-index: 1;">
+        <div style="position: fixed;top: 0;left: 0;width: 100%;height: 4rem;z-index: 11;">
             <x-header @on-click-back="backReturn" style="background-color:#06123C;padding: .6rem 0;" :left-options="{backText: '',preventGoBack:true}">信息确认</x-header>
         </div>
-        <div style="margin-top: 3.2rem;padding: 3rem .8rem;background: rgb(6, 18, 60);">
-            <step v-model="step1" background-color='#fbf9fe'>
-                <step-item description="上传资料"></step-item>
-                <step-item description="信息确认"></step-item>
-                <step-item description="合同签署"></step-item>
-            </step>
+        <div class="schedule4" style="margin-top: 3.2rem;padding: 1.5rem 0.8rem;background: rgb(6, 18, 60);">
+            <flow>
+                <flow-state state="1" title="上传资料" is-done></flow-state>
+                <flow-line is-done></flow-line>
+
+                <flow-state state="2" title="信息确认" is-done></flow-state>
+                <flow-line></flow-line>
+
+                <flow-state state="3" title="合同签署"></flow-state>
+            </flow>
         </div>
         <div style="padding: .5rem 1rem;;text-align: left;">
             <span style="font-size:1rem">请核对修改并完善公司信息</span>
@@ -47,7 +51,7 @@
             <cell title="公司注册地址" :value="objData.registerAddress" ></cell>
         </div>
         <div style="text-align: left;background:#fff;border-top:1px solid #ddd;">
-            <cell title="实际经营城市" @click.native="distpickerShow" :value="practicalinfoAddress" is-link></cell>
+            <x-address title="实际经营城市" raw-value @on-shadow-change="onShadowChange" v-model="value" :list="addressData" placeholder="请选择地址"></x-address>
         </div>
         <div style="text-align: left;background:#fff;border-top:1px solid #ddd;">
             <x-input title="实际经营详细地址" style="background-color:#fff;" :show-clear="false" type="text" v-model="infoAddress" @on-blur="Fvalue" placeholder="请输入详细地址">
@@ -56,29 +60,23 @@
         <div style="padding: 2rem 1rem 1rem 1rem;">
             <x-button  class="button_gray" type="primary"  ref="button" @click.native="SubmitNext" action-type="button">下一步</x-button>
         </div>
-        <div class="distpicker_div_f" v-show="distpickerflg">
-            <div class="distpicker_div">
-                <v-distpicker type="mobile" @selected="onSelected"></v-distpicker>
-            </div>
-        </div>
     </div>
 </template>
 <script>
-import { Step, StepItem, XButton, XHeader,XInput,Cell, } from 'vux'
-import VDistpicker from 'v-distpicker'
+import { Step, StepItem, XButton, XHeader,XInput,Cell,Flow, FlowState, FlowLine, XAddress, ChinaAddressV4Data } from 'vux'
 export default {
     components: {
-        Step,
-        StepItem,
+        Flow,
+        FlowState,
+        FlowLine,
         XButton,
         XInput,
         XHeader,
         Cell,
-        VDistpicker
+        XAddress,
     },
     data() {
       return {
-        step1: 1, 
         objData:{
             companyName:'',
             licenseNo:'',
@@ -90,10 +88,11 @@ export default {
             registerAddress:'',
         },
         email:this.$route.query.email,
-        practicalinfoAddress:'',
+        practicalinfoAddress: '',
+        value: [],
         infoAddress:'',
-        distpickerflg:false,
         flg:false,
+        addressData: ChinaAddressV4Data,
       };
     },
     watch: {
@@ -116,6 +115,7 @@ export default {
                 }
             }
         }
+        document.body.scrollTop = 0
     },  
     methods: {
         Fvalue(e){
@@ -140,11 +140,11 @@ export default {
                 this.$vux.alert.show({title: '提示',content: '请输入详细地址',});
                 return false;
             }
-            let companyInfo = {companyInfo:Object.assign({}, this.objData, {
+            let companyInfo = {companyInfo:Object.assign(this.objData, {
                 licenseAddress: this.infoAddress,
                 companyIdType: "2",
                 email: this.email,
-                licenseCity: this.practicalinfoAddress,
+                licenseCity: this.practicalinfoAddress.replace(/ /g,","),
                 legalPersonPhone: window.sessionStorage.phone,
                 updateStep: "/perfectionLegalInfo",
             })}
@@ -161,15 +161,8 @@ export default {
                 this.$vux.alert.show({title: '提示',content: data.returnMessage})
             });
         },
-        distpickerShow(){
-            document.body.style.overflow = "hidden"
-            this.distpickerflg = true;
-        },
-        onSelected(data) {
-            this.practicalinfoAddress = `${data.province.value} ${data.city.value} ${data.area.value}`;
-            this.distpickerflg = false
-            document.body.style.overflow = "auto";
-            this.Fvalue()
+        onShadowChange(ids,names) {
+            this.practicalinfoAddress = `${names[0]} ${names[1]} ${names[2]}`;
         },
         backReturn(){
             this.$router.push({
@@ -177,6 +170,9 @@ export default {
             })
         },
     },
+    updated(){
+
+    }
   }
 
 </script>
@@ -209,4 +205,44 @@ export default {
     height: 100%;
     z-index: 111;
 }
+</style>
+<style>
+.schedule4 .weui-wepay-flow__li_done .weui-wepay-flow__state {
+    width: 1.5rem;
+    height: 1.5rem;
+    line-height: 1.5rem;
+    border-radius: 1rem;
+    top: -.3rem;
+    background: #fff;
+    color: rgb(6, 18, 60);
+    font-weight: bolder;
+    font-size: 1rem;
+}
+.schedule4 .weui-wepay-flow__li_done {
+    background: #333;
+    color:#333;
+}
+.schedule4 .weui-wepay-flow__li .weui-wepay-flow__state {
+    width: 1.5rem;
+    height: 1.5rem;
+    line-height: 1.5rem;
+    border-radius: 1rem;
+    top: -.3rem;
+    background: #fff;
+    color: #06123C;
+    font-weight: bolder;
+    font-size: 1rem;
+}
+.schedule4 .weui-wepay-flow__line {
+    background-color: #82889D;
+}
+.schedule4 .weui-wepay-flow__line_done .weui-wepay-flow__process {
+    background: #fff;
+}
+.schedule3 .weui-wepay-flow__title-bottom {
+    color:#82889D;
+}
+.schedule4 .weui-wepay-flow__li_done .weui-wepay-flow__title-bottom {
+    color: #fff;
+} 
 </style>

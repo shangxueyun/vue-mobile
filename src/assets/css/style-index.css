@@ -20,27 +20,12 @@ input:active{user-select: text;-webkit-user-select:text;zoom:1}
     top: 2px;
     left: -5px;
 }
-.yd-navbar:after{
-    height: 0px;
+.vux-header-title{
+    font-size: 1rem !important;
 }
 .button_dark{
     background: #06123B !important;
 }
 .button_gray{
     background: #9196AA !important;
-}
-.yd-back-icon{
-    font-weight: bolder;
-}
-.align_centent .yd-flexbox-item-center{
-    text-align: left;
-}
-.align_centent span{
-    color: #ccc;
-    font-size: .8rem;
-    padding-left: .2rem;
-}
-.yd-step-theme1 .yd-step-item>em{
-    font-size: 1rem;
-    line-height: 24px;
 }

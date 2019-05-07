@@ -1,19 +1,26 @@
 import axios from 'axios'
+import Vue from 'vue'
+import  { AlertPlugin } from 'vux'
+import  { LoadingPlugin } from 'vux'
+Vue.use(LoadingPlugin)
+Vue.use(AlertPlugin)
 //import qs from 'qs';
+let VueF = Vue
 
 
 const port = '/api/';
 
 axios.defaults.withCredentials = true;
 axios.defaults.timeout = 30000;
+const config = {headers:{post:{'Content-Type':'application/json;charset=UTF-8'}}};
 
 const AjaxPost = (url, data={}, noToken) => {
     let timeNo = formatTime(undefined, 'requestTime');
-    let token = noToken ? {} : {token: sessionStorage.token};
+    let token = noToken ? {} : {token: window.sessionStorage.token};
     let dataObj = {
     "service": url,
-        "version": "1.0",
-        "partnerId": "111111111111",
+        "version": "1.0.1",
+        "partnerId": "1555922788801",
             "bizContent": Object.assign({}, {
                 requestNo: timeNo,
                 requestTime: timeNo,
@@ -23,11 +30,17 @@ const AjaxPost = (url, data={}, noToken) => {
             }, token, data),
     }
     return new Promise((resolve, reject) => {
-        axios.post(`${port}${url}`,dataObj,{headers:{post:{'Content-Type':'application/json;charset=UTF-8'}}})
+        axios.post(`${port}${url}`,dataObj,config)
         .then(response => {
             resolve(response.data);
         }, err => {
-            resolve(err);
+            VueF.$vux.loading.hide();
+            if(err.response.status==404)
+            {
+                VueF.$vux.alert.show({title: '提示',content: "请求不到接口，请检查网络是否正常。"})
+            }else
+            VueF.$vux.alert.show({title: '提示',content: "服务器错误"})
+            //resolve(err);
         })
         .catch((error) => {
             reject(error)
@@ -35,33 +48,33 @@ const AjaxPost = (url, data={}, noToken) => {
     })
 }
 
-const AjaxGet = (url, data, noToken) => {
-    let timeNo = formatTime(undefined, 'requestTime');
-    let token = noToken ? {} : {token: sessionStorage.token};
-    return new Promise((resolve, reject) => {
-        axios.get(`${port}${url}`,{
-        "service": url,
-            "version": "1.0",
-            "partnerId": "111111111111",
-                "bizContent": Object.assign({}, {
-                  requestNo: timeNo,
-                  requestTime: timeNo,
-                  inputCharset: 'utf-8',
-                  signType: 'RSA',
-                  sign: 'sign',
-                }, token, data),
-        }
-        ,{headers:{post:{'Content-Type':'application/json;charset=UTF-8'}}})
-        .then(response => {
-            resolve(response.data);
-        }, err => {
-            resolve(err);
-        })
-        .catch((error) => {
-            reject(error)
-        })
-    })
-}
+// const AjaxGet = (url, data, noToken) => {
+//     let timeNo = formatTime(undefined, 'requestTime');
+//     let token = noToken ? {} : {token: sessionStorage.token};
+//     return new Promise((resolve, reject) => {
+//         axios.get(`${port}${url}`,{
+//         "service": url,
+//             "version": "1.0.1",
+//             "partnerId": "1555922788801",
+//                 "bizContent": Object.assign({}, {
+//                   requestNo: timeNo,
+//                   requestTime: timeNo,
+//                   inputCharset: 'utf-8',
+//                   signType: 'RSA',
+//                   sign: 'sign',
+//                 }, token, data),
+//         }
+//         ,config)
+//         .then(response => {
+//             resolve(response.data);
+//         }, err => {
+//             resolve(err);
+//         })
+//         .catch((error) => {
+//             reject(error)
+//         })
+//     })
+// }
 
 const formatTime = (date= new Date(), type) => {
     const year = date.getFullYear()
@@ -81,27 +94,7 @@ const formatNumber = n => {
     return n[1] ? n : '0' + n
 }
 
-//按钮是否高亮 condition条件
-const isBtnClick = function(condition) {
-    if (condition) {
-      this.setData
-        ({
-          btnClass: "button_dark",
-          btnHoverClass: "button_dark_hover",
-          btnBind: true
-        })
-    }
-    else {
-      this.setData
-        ({
-          btnClass: "button_gray",
-          btnHoverClass: "button_gray_hover",
-          btnBind: false
-        })
-    }
-  }
-//弹出框
-
+//对象处理
 const getUrlData = function (obj) {
     let res = '';
     for(let i in obj) {
@@ -112,6 +105,7 @@ const getUrlData = function (obj) {
 
 //全局字符串位数处理
 const stringDispose = (str)=>{
+    str = Number(str).toString();
     let strLe = str.length,newstr = "",fig = parseInt(strLe/3),g=3,arr = str.split("").reverse();
     if(str.indexOf(".")>=0)
     {
@@ -148,12 +142,33 @@ const stringDispose = (str)=>{
     return newstr
 }
 
-module.exports = {
-    formatTime: formatTime,
-    AjaxPost: AjaxPost,
-    AjaxGet: AjaxGet,
-    //AjaxResult:AjaxResult,
-    isBtnClick: isBtnClick,
-    getUrlData: getUrlData,
-    stringDispose:stringDispose,
-  }
+const BtnColor = (e,arr,obj)=>{
+    let thisLs = e;
+    let className = thisLs.$refs.button.$el.className;
+    if(obj){
+        arr.forEach((v,i)=>{
+            if(obj[v]!="")
+            {
+                className = className.replace("button_dark","")
+                thisLs.$refs.button.$el.className =  className.replace("button_gray","") + " button_dark";   
+            }else{
+                className = className.replace("button_gray","")
+                thisLs.$refs.button.$el.className =  className.replace("button_dark","") + " button_gray";  
+            }
+        });
+    }else{
+        arr.forEach((v,i)=>{
+            if(thisLs[v]!="")
+            {
+                className = className.replace("button_dark","")
+                thisLs.$refs.button.$el.className =  className.replace("button_gray","") + " button_dark";            
+            }else{
+                className = className.replace("button_gray","")
+                thisLs.$refs.button.$el.className =  className.replace("button_dark","") + " button_gray";            
+            }
+        });        
+    }
+
+}
+
+module.exports = {formatTime,AjaxPost,getUrlData,stringDispose,BtnColor}

@@ -1,21 +1,21 @@
 <template>
-    <div style="height: 100%;">
+    <div style="height: 100%;overflow: hidden;">
         <x-header @on-click-back="backReturn" style="background-color:#06123C;padding: .6rem 0;" :left-options="{backText: '',preventGoBack:true}">验证手机号</x-header>
         <div style="padding: 0.3rem 1rem;text-align: left;">
             <span style="font-size:1rem">手机号:{{phone}}</span>
         </div>
         <div style="margin-bottom:2px">
-            <x-input title="字数+字母不少于6位" style="background-color:#fff;" :show-clear="false" type="password" v-model="password" @on-change="passwordFvalue" placeholder="字数+字母不少于6位">
+            <x-input title="字数+字母不少于6位" style="background-color:#fff;" :show-clear="false" type="password" v-model="password" @on-change="Fvalue" placeholder="字数+字母不少于6位">
                 <img slot="label" style="padding-right:10px;display:block;" src="https://china-mz.cn/bmimg/lock.svg" width="24" height="24">
             </x-input>
         </div>
         <div style="margin-bottom:2px">
-            <x-input title="请再次确认密码" style="background-color:#fff;" :show-clear="false" type="password" v-model="newPassword" @on-change="newPasswordFvalue" placeholder="请再次确认密码">
+            <x-input title="请再次确认密码" style="background-color:#fff;" :show-clear="false" type="password" v-model="newPassword" @on-change="Fvalue" placeholder="请再次确认密码">
                 <img slot="label" style="padding-right:10px;display:block;" src="https://china-mz.cn/bmimg/lock.svg" width="24" height="24">
             </x-input>
         </div>
         <div class="centetn" style="margin-bottom:1.5rem;background-color:#fff;">
-            <x-input title="请输入验证码" style="background-color:#fff;width: 58%;" :show-clear="false" v-model="verification" @on-change="verificationFvalue" placeholder="请输入验证码">
+            <x-input title="请输入验证码" style="background-color:#fff;width: 58%;" type="number" :show-clear="false" v-model="verification" @on-change="Fvalue" placeholder="请输入验证码">
                 <img slot="label" style="padding-right:10px;display:block;" src="https://china-mz.cn/bmimg/mail.svg" width="24" height="24">
             </x-input>
             <div style="padding: .6rem 0px;color: #7a9dec;" @click="verificationFunc">{{verificationmsg}}</div>
@@ -43,8 +43,6 @@ export default {
           verification:'',
           verificationmsg:'获取验证码',
           verificationFlg:false,
-          num:60,
-          correct:false
       };
     },
     created() {
@@ -57,27 +55,11 @@ export default {
         window.flgNum = 60;
         window.Setflg = null;
         window.OutFlg = null;
+        document.body.scrollTop = 0
     },  
     methods: {
-        passwordFvalue(e){
-            this.Fvalue(e)
-        },
-        newPasswordFvalue(e){
-            this.Fvalue(e)
-        },
-        verificationFvalue(e){
-            this.Fvalue(e)
-        },
         Fvalue(e){
-            let className = this.$refs.button.$el.className;
-            if(this.password!=""&&this.newPassword!=""&&this.verification!="")
-            {
-                className = className.replace("button_dark","")
-                this.$refs.button.$el.className =  className.replace("button_gray","") + " button_dark";
-            }else{
-                className = className.replace("button_gray","")
-                this.$refs.button.$el.className =  className.replace("button_dark","") + " button_gray";
-            }
+            this.APIFunc.BtnColor(this,['password','newPassword','verification']);
         },
         verificationFunc(){
             if(!this.verificationFlg)
@@ -89,7 +71,7 @@ export default {
                 phoneNo: this.phone,
                 bizType: 'REGISTER'
                 }).then(data => {
-                    this.$vux.loading.hide()
+                    this.$vux.loading.hide();
                     if(data.requestStatus =="SUCCESS"){
                         window.Setflg = setInterval(()=>{
                             this.verificationFlg = true
@@ -134,6 +116,7 @@ export default {
                 this.$vux.loading.hide();
                 if(data.requestStatus =="SUCCESS"){
                     window.sessionStorage.setItem("token",data.bizData.token);
+                    window.sessionStorage.setItem("memberId",data.bizData.memberId);
                     window.sessionStorage.setItem("phone",this.phone);
                     this.$vux.alert.show({title: '验证成功',content: '您接下来所录入或上传的资料和信息将用于收集主体资料、身份验证、审批业务等目的，并有可能披露给第三方；如果您非申请企业及其法定代表人本人或者有权代理人，请立即停止相关操作。',onHide () {
                         router.push({
@@ -141,14 +124,8 @@ export default {
                         })
                     }})
                 }else
-                this.$vux.alert.show({title: '提示',content: data.returnMessage})
-
+                this.$vux.alert.show({title: '提示',content: data.returnMessage})                    
             });
-
-            //     this.$router.push({
-            //     path: '/uploadDocuments',
-            // })
-
         },
         backReturn(){
             this.$router.push({

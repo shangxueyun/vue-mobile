@@ -24,7 +24,7 @@ module.exports = {
   },
   dev: {
     env: require('./dev.env'),
-//    host: '10.10.60.88',
+//  host: '10.10.60.88',
     port: 8080,
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
@@ -37,13 +37,8 @@ module.exports = {
           pathRewrite: { 
             '^/api': 'https://www.china-mz.cn/' //路径重写 
             }
-          }
+          },
     },
-    // CSS Sourcemaps off by default because relative paths are "buggy"
-    // with this option, according to the CSS-Loader README
-    // (https://github.com/webpack/css-loader#sourcemaps)
-    // In our experience, they generally work as expected,
-    // just be aware of this issue when enabling this option.
     cssSourceMap: false
   }
 }

@@ -1,6 +1,6 @@
 <template>
     <div style="height: 100%;">
-        <div style="position: fixed;top: 0;left: 0;width: 100%;height: 4rem;z-index: 1;">
+        <div style="position: fixed;top: 0;left: 0;width: 100%;height: 4rem;z-index: 11;">
             <x-header @on-click-back="backReturn" style="background-color:#06123C;padding: .6rem 0;" :left-options="{backText: '',preventGoBack:true}">人脸识别</x-header>
         </div>
         <div style="margin-top: 3.5rem;height: 400px;display: flex;flex-direction: row;justify-content: end;align-items: normal;">
@@ -96,7 +96,7 @@ export default {
 
     },
     mounted() {
-
+        document.body.scrollTop = 0
     },  
     methods: {
         clos(estr){
