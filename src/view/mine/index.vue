@@ -86,7 +86,8 @@ export default {
 
     },
     mounted() {
-        window.ppss = this.$refs.contract.$el
+        window.ppss = this.$refs.contract.$el;
+        document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
         this.$vux.loading.show({text: '加载中...'});
         this.APIFunc.AjaxPost('queryApplyRecord', {

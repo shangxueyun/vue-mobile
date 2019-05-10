@@ -63,7 +63,8 @@ export default {
         // window.flgNum = 60;
         // window.Setflg = null;
         // window.OutFlg = null;
-        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
     },  
     methods: {
         Fvalue(e){

@@ -12,7 +12,7 @@
                 <input type="file" accept="image/*" name="rlsbDiv rlsbSRC" @change="changeFileHandler" mutiple="mutiple" />
             </div>
             <div v-show="rlsbSRC" class="div_IMG img_color">
-                <img class="previewer-demo-img" :src="Base64Obj.rlsbDiv" alt="上传身份证反面"  @click="show(0)" style="height: 100%;width: 100%;border-radius: .5rem;">
+                <img id="portraitCompare" class="previewer-demo-img" :src="Base64Obj.rlsbDiv" alt="上传身份证反面"  @click="show(0)" style="height: 100%;width: 100%;border-radius: .5rem;">
                 <span @click="clos('rlsbDiv rlsbSRC')">X</span>
             </div>
         </div>
@@ -42,7 +42,8 @@
 </template>
 <script>
 import { Confirm ,Step, StepItem, XButton, XHeader,TransferDomDirective as TransferDom,Previewer } from 'vux'
-import "../../assets/js/lrz.bundle.js"
+import lrz from 'lrz'
+import { debuglog } from 'util';
 export default {
     directives: {
         TransferDom
@@ -66,6 +67,7 @@ export default {
         Base64Obj:{
             rlsbDiv:"",
         },
+        portraitCompare_img:'',
         options: {
             getThumbBoundsFn (index) {
             // find thumbnail element
@@ -96,7 +98,8 @@ export default {
 
     },
     mounted() {
-        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
     },  
     methods: {
         clos(estr){
@@ -110,9 +113,10 @@ export default {
             let type = data.type,url = window.URL || window.webkitURL;
             let img = new Image(),obj = Base64Obj,that = this;
             img.src = url.createObjectURL(data);
-            img.onload = function () {
+            img.onload = function (e) {
                 let height = this.height
-                let width = this.width
+                let width = this.width;
+                let ele = e;
                 lrz(data,{quality:quality})
                 .then(function (rst) {
                     rst.base64 = rst.base64.replace("data:image/jpeg;","data:"+type+";");
@@ -125,7 +129,19 @@ export default {
                         w: width/2,
                         h: height/2,
                     })
-                    that.Fvalue()
+                    that.Fvalue();
+                    portraitCompare.onload =function(e){
+                        var canvas = document.createElement("canvas");
+                        var ctx = canvas.getContext("2d");
+                        canvas.width = 200;
+                        canvas.height = 260;
+                        //人脸识别尺寸规格*
+                        ctx.drawImage(portraitCompare, 0, 0, 200, 260);
+                        lrz(canvas.toDataURL("image/"+type).replace("data:image/png;","data:image/jpg;"),{quality:0.97})
+                        .then(function (rst) {
+                            that.portraitCompare_img = rst.base64;
+                        })
+                    }
                 })
                 .catch(function (err) {
                 })
@@ -137,7 +153,7 @@ export default {
             if(e.target.files.length==1)
             {
                 const files = e.target.files,arr = e.target.name.split(" ");
-                this.lrzFUNC(arr,this.Base64Obj,files[0],0.70);
+                this.lrzFUNC(arr,this.Base64Obj,files[0],0.60)
 
             }else{
                 this.$vux.alert.show({title: '提示',content: '不能选择多张图片！',})
@@ -170,7 +186,7 @@ export default {
             }
             this.$vux.loading.show({text: '加载中...'});
             this.APIFunc.AjaxPost('portraitCompare', {
-                photo: this.Base64Obj.rlsbDiv,
+                photo: this.portraitCompare_img,
                 updateStep: "/contractSigning"
             }).then(data => {
                 this.$vux.loading.hide();
@@ -194,7 +210,7 @@ export default {
 
 </script>
 
-<style lang="scss" scoped>
+<style>
 
 .div_IMG{
     width: 100%;
@@ -255,5 +271,11 @@ export default {
     height: 100%;
     background: url(https://china-mz.cn/bmimg/realize_face.png) no-repeat;
     background-size: 100% 100%;
+}
+.canvas_div{
+    position: absolute;
+    z-index: 1;
+    width: 19.5rem;
+    height: 24.8rem;
 }
 </style>

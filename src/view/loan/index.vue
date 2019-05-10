@@ -102,7 +102,8 @@ export default {
     computed: {
     },
     mounted() {
-        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
         let taund = this;
         this.$vux.loading.show({text: '加载中...'});
         this.APIFunc.AjaxPost('memberInfoQuery', {

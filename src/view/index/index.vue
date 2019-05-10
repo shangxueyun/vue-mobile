@@ -96,7 +96,8 @@ export default {
 
     },
     mounted() {
-        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
         this.$vux.loading.show({text: '加载中...'});
         this.APIFunc.AjaxPost('memberInfoQuery', {queryContentList:['BANK_ACCOUNT','INVOICE_POOL','CREDIT_ACCOUNT','COMPANY']
         }).then(data => {

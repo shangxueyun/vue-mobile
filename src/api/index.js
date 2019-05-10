@@ -11,23 +11,26 @@ let VueF = Vue
 const port = '/api/';
 
 axios.defaults.withCredentials = true;
-axios.defaults.timeout = 30000;
+axios.defaults.timeout = 60000;
 const config = {headers:{post:{'Content-Type':'application/json;charset=UTF-8'}}};
 
 const AjaxPost = (url, data={}, noToken) => {
-    let timeNo = formatTime(undefined, 'requestTime');
-    let token = noToken ? {} : {token: window.sessionStorage.token};
+    let timeNo = formatTime(undefined, 'requestTime'),token;
+    
+    if(window.sessionStorage.token)
+    token = noToken ? {} : {token: window.sessionStorage.token};
+    else
+    token = noToken ? {} : {token: window.localStorage.token};
+
     let dataObj = {
-    "service": url,
-        "version": "1.0.1",
-        "partnerId": "1555922788801",
-            "bizContent": Object.assign({}, {
-                requestNo: timeNo,
-                requestTime: timeNo,
-                inputCharset: 'utf-8',
-                signType: 'RSA',
-                sign: 'sign',
-            }, token, data),
+    "service": url,"version": "1.0.1","partnerId": "1555922788801","bizContent": Object.assign({}, 
+        {
+            requestNo: timeNo,
+            requestTime: timeNo,
+            inputCharset: 'utf-8',
+            signType: 'RSA',
+            sign: 'sign',
+        }, token, data),
     }
     return new Promise((resolve, reject) => {
         axios.post(`${port}${url}`,dataObj,config)
@@ -47,34 +50,6 @@ const AjaxPost = (url, data={}, noToken) => {
         })
     })
 }
-
-// const AjaxGet = (url, data, noToken) => {
-//     let timeNo = formatTime(undefined, 'requestTime');
-//     let token = noToken ? {} : {token: sessionStorage.token};
-//     return new Promise((resolve, reject) => {
-//         axios.get(`${port}${url}`,{
-//         "service": url,
-//             "version": "1.0.1",
-//             "partnerId": "1555922788801",
-//                 "bizContent": Object.assign({}, {
-//                   requestNo: timeNo,
-//                   requestTime: timeNo,
-//                   inputCharset: 'utf-8',
-//                   signType: 'RSA',
-//                   sign: 'sign',
-//                 }, token, data),
-//         }
-//         ,config)
-//         .then(response => {
-//             resolve(response.data);
-//         }, err => {
-//             resolve(err);
-//         })
-//         .catch((error) => {
-//             reject(error)
-//         })
-//     })
-// }
 
 const formatTime = (date= new Date(), type) => {
     const year = date.getFullYear()

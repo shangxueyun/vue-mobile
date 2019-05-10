@@ -66,6 +66,11 @@ const  routes = [
         hidden: true
     },
     {
+        path: '/',
+        hidden: true,
+        redirect: { path: '/login' }
+    },
+    {
         path: '*',
         hidden: true,
         redirect: { path: '/login' }

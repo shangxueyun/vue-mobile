@@ -102,7 +102,8 @@ export default {
     },
     mounted() {
         this.onLoadUp();
-        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
     },  
     methods: {
         Fvalue(e){

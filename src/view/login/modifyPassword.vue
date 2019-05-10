@@ -4,7 +4,7 @@
             <x-header @on-click-back="backReturn" style="background-color:#06123C;padding: .6rem 0;" :left-options="{backText: '',preventGoBack:true}">修改密码</x-header>
         </div>
         <div style="margin-top:5rem;border-bottom:1px solid #ddd">
-            <x-input title="" style="background-color:#fff;height: 2rem;" :show-clear="false" type="number" v-model="phone" placeholder="请输入法定代表人手机号">
+            <x-input title="" style="background-color:#fff;height: 2rem;" :show-clear="false" type="text" v-model="phone" placeholder="请输入法定代表人手机号">
                 <img slot="label" style="padding-right:10px;display:block;" src="https://china-mz.cn/bmimg/phone.svg" width="24" height="24">
             </x-input>
         </div>
@@ -42,7 +42,8 @@ export default {
 
     },
     mounted() {
-        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
     },  
     methods: {
         Fvalue(e){

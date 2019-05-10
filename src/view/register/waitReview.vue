@@ -43,6 +43,7 @@ export default {
 
     },
     mounted() {
+        document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
         if(this.$route.query.type)
         {

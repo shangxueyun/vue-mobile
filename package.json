@@ -15,6 +15,7 @@
     "crypto-js": "^3.1.9-1",
     "font-awesome": "^4.7.0",
     "jquery": "^3.3.1",
+    "lrz": "^4.9.40",
     "qiniu-js": "^2.5.3",
     "v-distpicker": "^1.2.1",
     "vue": "^2.3.0",

@@ -7,12 +7,12 @@
             <i></i>
         </div>
         <div style="margin-top:1rem;border-bottom:1px solid #ddd">
-            <x-input title="" style="background-color:#fff;height: 2rem;" :show-clear="false" type="number" v-model="phone" @on-change="passwordFvalue" placeholder="手机号">
+            <x-input title="" style="background-color:#fff;height: 2rem;" :show-clear="false" type="text" v-model="phonePE" @on-change="passwordFvalue" placeholder="手机号">
                 <img slot="label" style="padding-right:10px;display:block;" src="https://china-mz.cn/bmimg/phone.svg" width="24" height="24">
             </x-input>
         </div>
         <div style="">
-            <x-input title="" style="background-color:#fff;height: 2rem;" :show-clear="false" type="password" v-model="password" @on-change="passwordFvalue" placeholder="密码">
+            <x-input title="" style="background-color:#fff;height: 2rem;" :show-clear="false" type="password" v-model="passwordPW" @on-change="passwordFvalue" placeholder="密码">
                 <img slot="label" style="padding-right:10px;display:block;" src="https://china-mz.cn/bmimg/lock.svg" width="24" height="24">
             </x-input>
         </div>
@@ -39,8 +39,8 @@ export default {
     },
     data() {
       return {
-          phone:'',
-          password:'',
+          phonePE:'',
+          passwordPW:'',
           loading_Flg:false,
       };
     },
@@ -71,6 +71,7 @@ export default {
             window.sessionStorage.removeItem("memberId");
             window.sessionStorage.removeItem("phone");
             window.sessionStorage.removeItem("companyInfo");
+            window.localStorage.removeItem("token");
         }
     },  
     methods: {
@@ -84,30 +85,30 @@ export default {
             this.Fvalue(e)
         },
         Fvalue(e){
-            this.APIFunc.BtnColor(this,['phone','password']);
+            this.APIFunc.BtnColor(this,['phonePE','passwordPW']);
         },
         SubmitNext(){
             let reg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1})|(16[0-9]{1}))+\d{8})$/,router = this.$router;
-            if(this.password=="")
+            if(this.passwordPW=="")
             {
                 this.$vux.alert.show({title: '提示',content: '请输入密码',})
                 return false
             }
-            if(this.phone==""){
+            if(this.phonePE==""){
                 this.$vux.alert.show({title: '提示',content: '请输入手机号'})
                 return false
             }else{
-                if(!reg.test(this.phone))
+                if(!reg.test(this.phonePE))
                 {
-                    this.$vux.alert.show({title: '提示',content: '请输入正确的手机号',})
+                    this.$vux.alert.show({title: '提示',content: '请输入正确的手机号',});
                     return false
                 }
             }
             this.$vux.loading.show({text: '加载中...'})
             this.APIFunc.AjaxPost('memberLogin', {
-                loginIdentity: this.phone,
+                loginIdentity: this.phonePE,
                 verifyType: 'PASSWORD',
-                loginVoucher: this.password,
+                loginVoucher: this.passwordPW,
                 extension:null,
                 identityType: 'PHONE_NO',
                 client: 'APP'
@@ -116,7 +117,7 @@ export default {
                 if(data.requestStatus =="SUCCESS"){
                     window.sessionStorage.setItem("token",data.bizData.token);
                     window.sessionStorage.setItem("memberId",data.bizData.memberId);
-                    window.sessionStorage.setItem("phone",this.phone);
+                    window.sessionStorage.setItem("phone",this.phonePE);
                     if(data.bizData.updateStep == "/pages/upload_file/state_of_check")
                     {
                         this.$router.push({
@@ -130,9 +131,13 @@ export default {
                         })
                     }
                     else{
+                        if(data.bizData.updateStep=="/contractSigning")
+                        {
+                            window.localStorage.token = data.bizData.token;
+                        }
                         this.$router.push({
                             path: data.bizData.updateStep,
-                        })
+                        })   
                     }
                 }else
                 this.$vux.alert.show({title: '提示',content: data.returnMessage})                    

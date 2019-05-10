@@ -61,7 +61,7 @@
                     向法人手机{{textV}}发送验证码。
                 </div>
                 <div style="padding:0rem 1rem 0rem 0rem;color:#999;display: flex;flex-direction: row;justify-content: space-between;align-items: normal;background:#fff">
-                    <x-input title="" style="background-color:#fff;text-align: left;" :show-clear="false" type="number" v-model="verificationVlu" placeholder="请输入验证码"></x-input>
+                    <x-input title="" style="background-color:#fff;text-align: left;" :show-clear="false" type="text" v-model="verificationVlu" placeholder="请输入验证码"></x-input>
                     <x-button :mini="true" style="width: 34%;height: 2rem;font-size: .8rem;padding: 0;" @click.native="verificationFunc" plain>{{verificationmsg}}</x-button>
                 </div>
                 <div style="padding:.5rem 5rem 1rem 5rem;color:#999;display: flex;flex-direction: row;justify-content: space-between;align-items: normal;background:#fff;border-radius: 0px 0px 10px 10px;">
@@ -110,6 +110,7 @@ export default {
         
     },
     mounted() {
+        document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
         if(JSON.parse(sessionStorage.companyInfo)['accountNo']!=null)
         this.accountNo = JSON.parse(sessionStorage.companyInfo)['accountNo']

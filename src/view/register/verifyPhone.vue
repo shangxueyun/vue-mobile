@@ -15,7 +15,7 @@
             </x-input>
         </div>
         <div class="centetn" style="margin-bottom:1.5rem;background-color:#fff;">
-            <x-input title="请输入验证码" style="background-color:#fff;width: 58%;" type="number" :show-clear="false" v-model="verification" @on-change="Fvalue" placeholder="请输入验证码">
+            <x-input title="请输入验证码" style="background-color:#fff;width: 58%;" type="text" :show-clear="false" v-model="verification" @on-change="Fvalue" placeholder="请输入验证码">
                 <img slot="label" style="padding-right:10px;display:block;" src="https://china-mz.cn/bmimg/mail.svg" width="24" height="24">
             </x-input>
             <div style="padding: .6rem 0px;color: #7a9dec;" @click="verificationFunc">{{verificationmsg}}</div>
@@ -55,7 +55,8 @@ export default {
         window.flgNum = 60;
         window.Setflg = null;
         window.OutFlg = null;
-        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
     },  
     methods: {
         Fvalue(e){

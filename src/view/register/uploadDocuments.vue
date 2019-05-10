@@ -64,7 +64,7 @@
             <div style="display: flex;flex-direction: row;justify-content: end;align-items: normal;margin-top:.8rem">
                 <div v-show="frpoDiv" class="div_IMG" >
                     <i></i>
-                    <div><span style="color:red">*</span>上传法人配偶身份证扫描</div>
+                    <div>上传法人配偶身份证扫描</div>
                     <input type="file" accept="image/*" name="frpoDiv frpoSRC" @change="changeFileHandler"  mutiple="mutiple" />
                 </div>
                 <div v-show="frpoSRC" class="div_IMG img_color">
@@ -73,7 +73,7 @@
                 </div>
                 <div v-show="zfrjhzDiv" class="div_IMG" >
                     <i></i>
-                    <div><span style="color:red">*</span>上传法人结婚证</div>
+                    <div>上传法人结婚证</div>
                     <input type="file" accept="image/*" name="zfrjhzDiv zfrjhzSRC" @change="changeFileHandler"  mutiple="mutiple" />
                 </div>
                 <div v-show="zfrjhzSRC" class="div_IMG img_color">
@@ -85,7 +85,7 @@
             <div style="display: flex;flex-direction: row;justify-content: end;align-items: normal;margin-top:.8rem">
                 <div v-show="SQSDiv" class="div_IMG" >
                     <i></i>
-                    <div><span style="color:red">*</span>上传实际控制个人征信查询授权书</div>
+                    <div>上传实际控制个人征信查询授权书</div>
                     <input type="file" accept="image/*" name="SQSDiv SQSSRC" @change="changeFileHandler"  mutiple="mutiple" />
                 </div>
                 <div v-show="SQSSRC" class="div_IMG img_color">
@@ -94,7 +94,7 @@
                 </div>
                 <div v-show="QTDiv" class="div_IMG" >
                     <i></i>
-                    <div><span style="color:red">*</span>其他照片</div>
+                    <div>其他照片</div>
                     <input type="file" accept="image/*" name="QTDiv QTDSRC" @change="changeFileHandler"  mutiple="mutiple" />
                 </div>
                 <div v-show="QTDSRC" class="div_IMG img_color">
@@ -115,7 +115,7 @@
 
 <script>
 import { Step, StepItem, XButton, XHeader,TransferDom,Previewer,Flow, FlowState, FlowLine } from 'vux'
-import "~/js/lrz.bundle.js"
+import lrz from 'lrz'
 export default {
     directives: {
         TransferDom
@@ -227,6 +227,7 @@ export default {
 
     },
     mounted() {
+        document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
     },  
     methods: {
@@ -242,10 +243,9 @@ export default {
             let img = new Image(),obj = Base64Obj,that = this;
             img.src = url.createObjectURL(data);
             img.onload = function () {
-                let height = this.height
-                let width = this.width
-                lrz(data,{quality:quality})
-                .then(function (rst) {
+                let height = this.height;
+                let width = this.width;
+                lrz(data,{quality:quality}).then(function (rst) {
                     //rst.base64 = rst.base64.replace("data:image/jpeg;","data:"+type+";");
                     obj[arr[0]] = rst.base64;
                     that[arr[0]] = false;
@@ -310,6 +310,7 @@ export default {
         changeFileHandler(e){
             if(Number(e.target.files.length)==1)
             {
+                //alert(e.target.files)
                 const files = e.target.files,arr = e.target.name.split(" ");
                 if(e.target.files[0].size>204800&&e.target.files[0].size<819200){
                     this.lrzFUNC(arr,this.Base64Obj,files[0],0.85)
@@ -355,11 +356,18 @@ export default {
             this.verificationFunc(this.Base64Obj.khxkDiv,'请上传开户许可证');
             this.verificationFunc(this.Base64Obj.jgdmDiv,'请上传机构信用代码');
             this.verificationFunc(this.Base64Obj.frhkbDiv,'请上传法人户口簿');
-            let companyInfo = {companyInfo:Object.assign(this.Base64Obj,{
-                    token:sessionStorage.token,
-                    updateStep: "/uploadCard"
-                })
-            }
+            let companyInfo = {companyInfo:{
+                licenseNoPhoto: this.Base64Obj.yyzzDiv, //营业执照
+                openingPermitPhoto: this.Base64Obj.khxkDiv, //开户许可
+                organizationNoPhoto: this.Base64Obj.jgdmDiv, //组织机构
+                legalAccountBookPhotoUrl: this.Base64Obj.frhkbDiv,
+                legalSpouseIdPhotoUrl: this.Base64Obj.frpoDiv,
+                legalMarriageCertificatePhotoUrl: this.Base64Obj.zfrjhzDiv,
+                letterOfQuiryPhotoUrl: this.Base64Obj.SQSDiv,
+                otherPhotoUrl: this.Base64Obj.QTDiv,          
+                token:sessionStorage.token,
+                updateStep: "/uploadCard"
+            }}
             this.$vux.loading.show({text: '加载中...'});
             this.APIFunc.AjaxPost('companyModify',companyInfo).then(data => {
                 this.$vux.loading.hide();

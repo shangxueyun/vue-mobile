@@ -54,6 +54,7 @@ export default {
 
     },
     mounted() {
+        document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
     },  
     methods: {
@@ -63,6 +64,12 @@ export default {
             this.APIFunc.AjaxPost('memberLogout', {}).then(data => {
                 this.$vux.loading.hide();
                 if(data.requestStatus =="SUCCESS"){
+                    window.sessionStorage.removeItem("fundSideId");
+                    window.sessionStorage.removeItem("loanNo");
+                    window.sessionStorage.removeItem("token");
+                    window.sessionStorage.removeItem("memberId");
+                    window.sessionStorage.removeItem("phone");
+                    window.sessionStorage.removeItem("companyInfo");
                     this.routerF('/login');
                 }else
                 this.$vux.alert.show({title: '提示',content: data.returnMessage})

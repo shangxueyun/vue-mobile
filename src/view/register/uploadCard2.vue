@@ -79,7 +79,7 @@
 </template>
 <script>
 import { Confirm ,Step, StepItem, XButton, XHeader,TransferDomDirective as TransferDom,Previewer,Flow, FlowState, FlowLine } from 'vux'
-import "~/js/lrz.bundle.js"
+import lrz from 'lrz'
 export default {
     directives: {
         TransferDom
@@ -141,10 +141,8 @@ export default {
 
     },
     mounted() {
-        // window.flgNum = 60;
-        // window.Setflg = null;
-        // window.OutFlg = null;
-        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
     },  
     methods: {
         clos(estr){

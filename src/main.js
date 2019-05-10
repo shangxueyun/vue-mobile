@@ -27,21 +27,24 @@ const router = new VueRouter({
 });
 
 //拦截器针对注册不能加
-// router.beforeEach((to, from, next) => {
-//   let token = window.sessionStorage.token;
-//   if (to.path == '/login') {
-//     window.sessionStorage.removeItem("token");
-//     window.sessionStorage.removeItem("memberId");
-//     window.sessionStorage.removeItem("phone");
-//     window.sessionStorage.removeItem("companyInfo");
-//   }
-//   if(!token&&to.path != '/login')
-//   {
-//     return next({ path: '/login' });
-//   }else{
-//     next();
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  let token;
+  if(window.sessionStorage.token)
+  token = window.sessionStorage.token;
+  else
+  token = window.localStorage.token;
+  if(!token)
+  {
+    if(to.path == '/register' || to.path == '/verifyPhone'|| to.path == '/passwordRetrieve'|| to.path == '/setPassword'|| to.path == '/login')
+    {
+      next();
+    }else{
+      return next({ path: '/login' });
+    }
+  }else{
+    next();
+  }
+})
 // let toURL = null
 // router.beforeEach((to, from, next) => {
 
